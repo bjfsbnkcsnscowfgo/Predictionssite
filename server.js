@@ -16,6 +16,23 @@ if (!fs.existsSync(dbDir)) {
 // 2. Database Connection
 // This connects to the file your routes expect: req.app.locals.db
 app.locals.db = new Database(path.join(dbDir, 'predictions.db'));
+// Create tables if they don't exist
+app.locals.db.exec(`
+  CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT UNIQUE,
+    password_hash TEXT,
+    role TEXT DEFAULT 'user',
+    credits INTEGER DEFAULT 100
+  );
+
+  CREATE TABLE IF NOT EXISTS predictions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT,
+    description TEXT,
+    status TEXT DEFAULT 'open'
+  );
+`);
 
 // 3. View Engine Setup
 app.set('view engine', 'ejs');
